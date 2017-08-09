@@ -2,6 +2,7 @@ package com.mojang.ld22;
 
 import java.awt.BorderLayout;
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
@@ -21,6 +22,7 @@ public class Game extends Canvas implements Runnable {
 	private boolean running = false;
 	
 	public void start() {
+		running = true ;
 		new Thread(this).start();
 	}
 	
@@ -40,7 +42,7 @@ public class Game extends Canvas implements Runnable {
 	}
 	
 	public void tick() {
-		
+		System.out.println("tick");
 	}
 
 	public  void render() {
@@ -50,17 +52,23 @@ public class Game extends Canvas implements Runnable {
 			return;
 		}
 		
-		Graphics g = bs.getDrawGraphics();
+		Graphics g = image.getGraphics();   
+		g.setColor(Color.BLACK);
+		g.fillRect(0, 0, WIDTH, HEIGHT);
+		g.dispose();
+		
+		g = bs.getDrawGraphics();
 		g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
 		g.dispose();
+		
 		bs.show();
 	}
 	
 	public static void main(String[] args) {
 		Game game = new Game();
-		game.setPreferredSize(new Dimension(WIDTH*2, HEIGHT*2));
 		game.setMinimumSize(new Dimension(WIDTH*2, HEIGHT*2));
 		game.setMaximumSize(new Dimension(WIDTH*2, HEIGHT*2));
+		game.setPreferredSize(new Dimension(WIDTH*2, HEIGHT*2));
 				
 		JFrame frame = new JFrame(Game.NAME);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -70,6 +78,8 @@ public class Game extends Canvas implements Runnable {
 		frame.setResizable(false);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
+		
+		game.start();
 	}
 }
 
