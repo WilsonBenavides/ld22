@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 
 import javax.swing.JFrame;
 
@@ -19,6 +20,7 @@ public class Game extends Canvas implements Runnable {
 
 	
 	private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+	private int[] pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData(); 
 	private boolean running = false;
 	
 	public void start() {
@@ -41,8 +43,9 @@ public class Game extends Canvas implements Runnable {
 		render();
 	}
 	
+	int tickCount;	
 	public void tick() {
-		System.out.println("tick");
+		tickCount++;
 	}
 
 	public  void render() {
@@ -52,12 +55,12 @@ public class Game extends Canvas implements Runnable {
 			return;
 		}
 		
-		Graphics g = image.getGraphics();   
-		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, WIDTH, HEIGHT);
-		g.dispose();
+		for (int i = 0; i < pixels.length; i++) {
+			pixels[i] = i + tickCount;
+		}
 		
-		g = bs.getDrawGraphics();
+		
+		Graphics g = bs.getDrawGraphics();
 		g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
 		g.dispose();
 		
