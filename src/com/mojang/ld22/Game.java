@@ -2,14 +2,18 @@ package com.mojang.ld22;
 
 import java.awt.BorderLayout;
 import java.awt.Canvas;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+
+import com.mojang.ld22.gfx.Screen;
+import com.mojang.ld22.gfx.SpriteSheet;
 
 public class Game extends Canvas implements Runnable {
 	private static final long serialVersionUID = 1L;
@@ -23,6 +27,7 @@ public class Game extends Canvas implements Runnable {
 	private int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 	private boolean running = false;
 	private int tickCount;
+	private Screen screen;
 
 	public void start() {
 		running = true;
@@ -32,6 +37,14 @@ public class Game extends Canvas implements Runnable {
 	public void stop() {
 		running = false;
 	}
+	
+	private void init() {
+		try {
+			screen = new Screen(WIDTH, HEIGHT, new SpriteSheet(ImageIO.read(Game.class.getResourceAsStream("/icons.png"))));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public void run() {
 		long lastTime = System.nanoTime();
@@ -40,6 +53,8 @@ public class Game extends Canvas implements Runnable {
 		int frames = 0;
 		int ticks = 0;
 		long lastTimer1 = System.currentTimeMillis();
+		
+		init();
 
 		while (running) {
 			long now = System.nanoTime();
@@ -86,9 +101,8 @@ public class Game extends Canvas implements Runnable {
 			return;
 		}
 
-		for (int i = 0; i < pixels.length; i++) {
-			pixels[i] = i + tickCount;
-		}
+		screen.render(pixels, 0, WIDTH);
+		
 
 		Graphics g = bs.getDrawGraphics();
 		g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
